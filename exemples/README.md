@@ -1,6 +1,6 @@
 # Privy API Examples
 
-This directory contains example code for testing all endpoints of the Privy API gem.
+This directory contains example code for testing all endpoints of the Privy gem.
 
 ## Setup
 
@@ -48,6 +48,4 @@ ruby -e "require 'dotenv/load'; load 'test_all_endpoints.rb'"
 
 ## Available Examples
 
-- `test_all_endpoints.rb`: Tests all Privy API endpoints (list, create, retrieve, balance, transactions)
-- `test_all_endpoints_comprehensive.rb`: More detailed testing with proper object handling
 - `simple_example.rb`: Basic example showing how to list wallets

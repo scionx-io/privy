@@ -5,7 +5,7 @@ require 'securerandom'
 require 'json'
 require 'base64'
 
-module PrivyApi
+module Privy
   class Client
     include HTTParty
 
@@ -13,8 +13,8 @@ module PrivyApi
     DEFAULT_TIMEOUT = 30
 
     def initialize(app_id: nil, app_secret: nil)
-      @app_id = app_id || PrivyApi.app_id
-      @app_secret = app_secret || PrivyApi.app_secret
+      @app_id = app_id || Privy.app_id
+      @app_secret = app_secret || Privy.app_secret
       validate_credentials!
 
       configure_client

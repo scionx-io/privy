@@ -1,4 +1,4 @@
-module PrivyApi
+module Privy
   class ListObject
     attr_reader :data, :has_more, :url
 

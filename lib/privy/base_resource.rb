@@ -1,4 +1,4 @@
-module PrivyApi
+module Privy
   class BaseResource
     def self.construct_from(values)
       new(values)

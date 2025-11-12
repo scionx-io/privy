@@ -1,4 +1,4 @@
-module PrivyApi
+module Privy
   module Util
     extend self
 

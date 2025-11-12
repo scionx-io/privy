@@ -1,4 +1,4 @@
-module PrivyApi
+module Privy
   module Models
     class BalancesCollection < ListObject
       def initialize(attributes = {})

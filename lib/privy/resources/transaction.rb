@@ -1,4 +1,4 @@
-module PrivyApi
+module Privy
   module Resources
     class Transaction < ApiResource
       # Transaction resource class

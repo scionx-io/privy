@@ -1,4 +1,4 @@
-module PrivyApi
+module Privy
   module Services
     class BaseService
       def initialize(client)

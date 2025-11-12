@@ -1,4 +1,4 @@
-module PrivyApi
+module Privy
   module Services
     class WalletService < BaseService
       def create(params = {}, idempotency_key: nil)

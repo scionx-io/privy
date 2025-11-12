@@ -1,4 +1,4 @@
 source 'https://rubygems.org'
 
-gem 'privy_api', path: '../privy_api'
+gem 'privy', path: '..'
 gem 'dotenv'
