@@ -1,7 +1,7 @@
 PATH
-  remote: ../privy_api
+  remote: ..
   specs:
-    privy_api (0.0.1)
+    privy (0.0.1)
       base64 (~> 0.2)
       httparty (~> 0.20)
       json (~> 2.6)
@@ -28,7 +28,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
-  privy_api!
+  privy!
 
 BUNDLED WITH
    2.7.2

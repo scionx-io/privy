@@ -1,30 +1,16 @@
 module Privy
   module Resources
     class Wallet < ApiResource
-      def self.list(params = {}, client: nil)
-        client ||= Privy::Client.new
-        client.request(:get, 'wallets', params)
-      end
+      extend ApiOperations::Crud
+      extend ApiOperations::Custom
+      include ApiOperations::ClassMethods
 
-      def self.retrieve(wallet_id, params = {}, client: nil)
-        client ||= Privy::Client.new
-        client.request(:get, "wallets/#{wallet_id}", params)
-      end
+      # Define the resource path
+      self.resource_path = 'wallets'
 
-      def self.create(params = {}, idempotency_key: nil, client: nil)
-        client ||= Privy::Client.new
-        client.request(:post, 'wallets', params, idempotency_key: idempotency_key)
-      end
-
-      def self.balance(wallet_id, params = {}, client: nil)
-        client ||= Privy::Client.new
-        client.request(:get, "wallets/#{wallet_id}/balance", params)
-      end
-
-      def self.transactions(wallet_id, params = {}, client: nil)
-        client ||= Privy::Client.new
-        client.request(:get, "wallets/#{wallet_id}/transactions", params)
-      end
+      # Add custom operations specific to wallets
+      define_custom_operation :balance, :get, 'wallets/:id/balance'
+      define_custom_operation :transactions, :get, 'wallets/:id/transactions'
     end
   end
 end

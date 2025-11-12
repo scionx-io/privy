@@ -9,6 +9,7 @@ GEM
       bigdecimal
       rexml
     csv (3.3.5)
+    dotenv (2.8.1)
     hashdiff (1.2.1)
     httparty (0.23.2)
       csv
@@ -34,6 +35,7 @@ PLATFORMS
 DEPENDENCIES
   base64 (~> 0.2)
   bundler (~> 2.0)
+  dotenv (~> 2.8)
   httparty (~> 0.20)
   json (~> 2.6)
   minitest (~> 5.0)

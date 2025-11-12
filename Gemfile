@@ -6,6 +6,7 @@ source 'https://rubygems.org'
 gem 'httparty', '~> 0.20'
 gem 'json', '~> 2.6'
 gem 'base64', '~> 0.2'
+gem 'dotenv', '~> 2.8'
 
 # Development and test dependencies
 group :development, :test do
