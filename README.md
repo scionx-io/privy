@@ -1,30 +1,27 @@
-# Privy API Integration
+# Privy API Ruby Client
 
-This repository contains an integration with Privy's wallet API, including:
-
-## Structure
-
-- `privy_api/` - Ruby gem for Privy API integration
-- `exemples/` - Example usage files for testing the API endpoints
+A Ruby client for the Privy API, providing wallet management functionality.
 
 ## Features
 
-- Wallet management (create, retrieve, list)
+- List, create, retrieve wallets
+- Check wallet balances
+- Get transaction history
+- Object-oriented response handling
+
+## Installation
+
+The gem is located in the `privy_api` directory and can be used by adding it to your project.
+
+## Usage
+
+See the `exemples` directory for usage examples:
+
+- `simple_example.rb` - Basic usage
+- `test_all_endpoints_comprehensive.rb` - Complete API test
+
+## Endpoints Supported
+
+- Wallet management (list, create, retrieve)
 - Balance checking
 - Transaction history
-- Proper object-oriented response handling
-
-## Setup
-
-1. Install dependencies:
-   ```bash
-   cd exemples
-   bundle install
-   ```
-
-2. Configure your Privy credentials in the `.env` file
-
-3. Run examples:
-   ```bash
-   ruby test_all_endpoints_comprehensive.rb
-   ```
