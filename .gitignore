@@ -1,0 +1,43 @@
+# Ruby specific files
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/test/reports/
+*.so
+lib/bundler/man
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# Editor specific files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+.DS_Store
+
+# IDE
+.idea/
+
+# OS generated files
+ehthumbs.db
+Thumbs.db
+
+# Development tools
+dev.log
+*.seed
+*.pid
+
+# Ignore local example configuration but keep the examples folder structure
+exemples/test_*.rb
+exemples/*.log
