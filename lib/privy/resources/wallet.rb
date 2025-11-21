@@ -1,16 +1,39 @@
 module Privy
   module Resources
-    class Wallet < ApiResource
-      extend ApiOperations::Crud
-      extend ApiOperations::Custom
-      include ApiOperations::ClassMethods
+    class Wallet < BaseResource
+      # Specific accessor methods for convenience
+      def id
+        self[:id]
+      end
 
-      # Define the resource path
-      self.resource_path = 'wallets'
+      def address
+        self[:address]
+      end
 
-      # Add custom operations specific to wallets
-      define_custom_operation :balance, :get, 'wallets/:id/balance'
-      define_custom_operation :transactions, :get, 'wallets/:id/transactions'
+      def chain_type
+        self[:chain_type]
+      end
+
+      def created_at
+        self[:created_at]
+      end
+
+      def updated_at
+        self[:updated_at]
+      end
+
+      # Dynamic method handling for all attributes
+      def method_missing(method_name, *args)
+        if respond_to?(method_name)
+          self[method_name]
+        else
+          super
+        end
+      end
+
+      def respond_to_missing?(method_name, include_private = false)
+        to_hash.key?(method_name.to_sym) || super
+      end
     end
   end
 end

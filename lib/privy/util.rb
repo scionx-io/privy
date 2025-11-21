@@ -1,78 +1,120 @@
+# frozen_string_literal: true
+
+require 'openssl'
+require 'base64'
+
 module Privy
   module Util
-    extend self
-
-    def convert_to_bridged_object(data)
-      case data
-      when Hash
-        convert_hash(data)
-      when Array
-        # If it's an array of wallet-like objects, wrap in WalletsCollection
-        if data.all? { |item| item.is_a?(Hash) && likely_wallet?(item) }
-          Models::WalletsCollection.new(data)
-        else
+    class << self
+      # Convert API response data to bridged object for easy access
+      def convert_to_bridged_object(data)
+        if data.is_a?(Hash)
+          BridgedObject.new(data)
+        elsif data.is_a?(Array)
           data.map { |item| convert_to_bridged_object(item) }
-        end
-      else
-        data
-      end
-    end
-
-    private
-
-    def convert_hash(hash)
-      return BaseResource.new(hash) unless hash.is_a?(Hash)
-
-      # Create a mapping of object types to resource classes
-      object_type = hash['object'] || hash[:object]
-
-      case object_type
-      when 'wallet'
-        Resources::Wallet.construct_from(hash)
-      when 'transaction'
-        Resources::Transaction.construct_from(hash)
-      when 'balance'
-        Resources::Balance.construct_from(hash)
-      else
-        # Check if this is a balances response (has a 'balances' key with an array)
-        if hash.key?('balances') && hash['balances'].is_a?(Array)
-          # This is a balances response
-          Models::BalancesCollection.new(hash)
-        # Check if this is a transactions response (has a 'transactions' key with an array)
-        elsif hash.key?('transactions') && hash['transactions'].is_a?(Array)
-          # This is a transactions response
-          Models::TransactionsCollection.new(hash)
-        # Check if this looks like a list response (has a 'data' key with an array)
-        elsif hash.key?('data') && hash['data'].is_a?(Array)
-          # This might be a paginated response
-          if hash['data'].all? { |item| item.is_a?(Hash) && likely_wallet?(item) }
-            Models::WalletsCollection.new(hash)
-          else
-            BaseResource.construct_from(hash)
-          end
         else
-          # Return as generic BaseResource if no specific type
-          BaseResource.construct_from(hash)
+          data
+        end
+      end
+
+      # Sign a request payload using the private key
+      def sign_request(private_key_pem, method, endpoint, payload = {})
+        # Construct the message to sign according to Privy's specification
+        # Implementation would follow Privy's signing guidelines
+        begin
+          private_key = OpenSSL::PKey::EC.new(private_key_pem)
+          
+          # Create the message to sign (method + endpoint + payload)
+          payload_json = payload.is_a?(String) ? payload : payload.to_json
+          message = "#{method.upcase}#{endpoint}#{payload_json}"
+          
+          # Sign the message
+          digest = OpenSSL::Digest::SHA256.new
+          signature = private_key.sign(digest, message)
+          
+          # Return base64 encoded signature
+          Base64.encode64(signature).strip
+        rescue => e
+          raise "Failed to sign request: #{e.message}"
+        end
+      end
+
+      # Verify a signature
+      def verify_signature(public_key_pem, signature_b64, method, endpoint, payload = {})
+        begin
+          public_key = OpenSSL::PKey::EC.new(public_key_pem)
+          signature = Base64.decode64(signature_b64)
+          
+          payload_json = payload.is_a?(String) ? payload : payload.to_json
+          message = "#{method.upcase}#{endpoint}#{payload_json}"
+          
+          digest = OpenSSL::Digest::SHA256.new
+          public_key.verify(digest, signature, message)
+        rescue => e
+          raise "Failed to verify signature: #{e.message}"
         end
       end
     end
 
-    # Heuristic to determine if a hash looks like a wallet object
-    def likely_wallet?(hash)
-      required_keys = ['id', 'address', 'chain_type']
-      required_keys.all? { |key| hash.key?(key) }
-    end
+    # A simple class to allow hash-like access to API response objects
+    class BridgedObject
+      def initialize(attributes = {})
+        @attributes = attributes
+      end
 
-    # Heuristic to determine if a hash looks like a balance object
-    def likely_balance?(hash)
-      required_keys = ['chain', 'asset', 'raw_value']
-      required_keys.all? { |key| hash.key?(key) }
-    end
+      def [](key)
+        @attributes[key]
+      end
 
-    # Heuristic to determine if a hash looks like a transaction object
-    def likely_transaction?(hash)
-      required_keys = ['transaction_hash', 'status', 'created_at']
-      required_keys.all? { |key| hash.key?(key) }
+      def []=(key, value)
+        @attributes[key] = value
+      end
+
+      def method_missing(method_name, *args, &block)
+        method_name_str = method_name.to_s
+        if method_name_str.end_with?('=')
+          # Setter
+          attr_name = method_name_str[0...-1]
+          @attributes[attr_name] = args.first
+        elsif @attributes.key?(method_name_str)
+          # Getter
+          @attributes[method_name_str]
+        elsif @attributes.key?(method_name_str.to_sym)
+          # Getter with symbol key
+          @attributes[method_name_str.to_sym]
+        else
+          super
+        end
+      end
+
+      def respond_to_missing?(method_name, include_private = false)
+        @attributes.key?(method_name.to_s) || @attributes.key?(method_name.to_sym) || super
+      end
+
+      def to_h
+        @attributes
+      end
+
+      def to_json(*args)
+        @attributes.to_json(*args)
+      end
+
+      def inspect
+        "#<BridgedObject:0x#{object_id.to_s(16)} #{@attributes.inspect}>"
+      end
+
+      private
+
+      def convert_value(value)
+        case value
+        when Hash
+          BridgedObject.new(value)
+        when Array
+          value.map { |v| convert_value(v) }
+        else
+          value
+        end
+      end
     end
   end
 end

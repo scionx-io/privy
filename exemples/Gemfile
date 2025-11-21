@@ -1,4 +1,6 @@
 source 'https://rubygems.org'
-
 gem 'privy', path: '..'
 gem 'dotenv'
+gem 'json-canonicalization'
+gem 'hpke', github: 'sylph01/hpke-rb', branch: 'master'
+gem "eth", "~> 0.5.16"
