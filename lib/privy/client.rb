@@ -12,9 +12,10 @@ module Privy
     BASE_URL = 'https://api.privy.io/api/v1'.freeze
     DEFAULT_TIMEOUT = 30
 
-    def initialize(app_id: nil, app_secret: nil)
+    def initialize(app_id: nil, app_secret: nil, authorization_private_key: nil)
       @app_id = app_id || Privy.app_id
       @app_secret = app_secret || Privy.app_secret
+      @authorization_private_key = authorization_private_key || Privy.authorization_private_key
       validate_credentials!
 
       configure_client
@@ -22,6 +23,17 @@ module Privy
 
     def wallets
       @wallets_service ||= Services::WalletService.new(self)
+    end
+
+    # Build a default authorization context from configured credentials
+    #
+    # @return [AuthorizationContext, nil]
+    def default_authorization_context
+      return nil unless @authorization_private_key
+
+      @default_authorization_context ||= AuthorizationContext.new(
+        authorization_private_keys: [@authorization_private_key]
+      )
     end
 
     private
@@ -46,21 +58,40 @@ module Privy
       )
     end
 
-    def request(method, endpoint, payload = {}, idempotency_key: nil)
-      options = build_request_options(method, payload, idempotency_key: idempotency_key)
+    def request(method, endpoint, payload = {}, idempotency_key: nil, authorization_signature: nil, authorization_context: nil)
+      # Auto-generate signature from authorization_context if provided
+      if authorization_context && authorization_context.can_sign?
+        url = "#{BASE_URL}/#{endpoint}"
+        authorization_signature = authorization_context.sign_request(
+          method: method,
+          url: url,
+          body: payload,
+          app_id: @app_id
+        )
+      end
+
+      options = build_request_options(method, payload, idempotency_key: idempotency_key, authorization_signature: authorization_signature)
       response = self.class.send(method, "/#{endpoint}", options)
 
       handle_response(response)
     end
 
-    def build_request_options(method, payload, idempotency_key: nil)
-      if method == :get
+    def build_request_options(method, payload, idempotency_key: nil, authorization_signature: nil)
+      options = if method == :get
         { query: payload }
       else
         headers = {}
         headers['privy-idempotency-key'] = idempotency_key if idempotency_key
         { body: payload.to_json, headers: headers }
       end
+
+      # Add authorization signature if provided
+      if authorization_signature
+        options[:headers] ||= {}
+        options[:headers]['privy-authorization-signature'] = authorization_signature
+      end
+
+      options
     end
 
     def handle_response(response)
@@ -114,13 +145,4 @@ module Privy
       end
     end
   end
-
-  # Error classes
-  class ApiError < StandardError; end
-  class AuthenticationError < ApiError; end
-  class RateLimitError < ApiError; end
-  class ForbiddenError < ApiError; end
-  class NotFoundError < ApiError; end
-  class ServiceUnavailableError < ApiError; end
-  class ServerError < ApiError; end
 end

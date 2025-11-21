@@ -6,11 +6,14 @@ require 'securerandom'
 require 'base64'
 
 require_relative 'privy/version'
+require_relative 'privy/errors'
 require_relative 'privy/base_resource'
 require_relative 'privy/api_operations'
 require_relative 'privy/api_resource'
 require_relative 'privy/list_object'
 require_relative 'privy/util'
+require_relative 'privy/authorization_context'
+require_relative 'privy/hpke_helper'
 require_relative 'privy/client'
 require_relative 'privy/resources/wallet'
 require_relative 'privy/resources/transaction'
@@ -41,6 +44,9 @@ module Privy
     # @return [String, nil] Global App Secret for Privy
     attr_accessor :app_secret
 
+    # @return [String, nil] Global Authorization Private Key for automatic request signing
+    attr_accessor :authorization_private_key
+
     attr_writer :base_url
 
     # Configure global settings for Privy API
@@ -51,6 +57,7 @@ module Privy
     #   Privy.configure do |config|
     #     config.app_id = 'your-app-id'
     #     config.app_secret = 'your-app-secret'
+    #     config.authorization_private_key = 'wallet-auth:YOUR_KEY'
     #   end
     def configure
       yield self
