@@ -26,6 +26,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'httparty', '~> 0.20'
   spec.add_dependency 'json', '~> 2.6'
   spec.add_dependency 'base64', '~> 0.2'
+  spec.add_dependency 'hpke', '~> 1.0.0.pre.rc1'
 
   spec.metadata['rubygems_mfa_required'] = 'true'
 end

@@ -49,3 +49,7 @@ ruby -e "require 'dotenv/load'; load 'test_all_endpoints.rb'"
 ## Available Examples
 
 - `simple_example.rb`: Basic example showing how to list wallets
+- `export_with_autosigning.rb`: Example showing wallet export with automatic request signing
+- `fully_automated_export.rb`: Fully automated wallet export with all cryptography handled internally
+- `authorization_context_advanced.rb`: Advanced usage of AuthorizationContext for fine-grained control
+- `eth_sign7702_authorization.rb`: Example of signing EIP-7702 authorization structs
