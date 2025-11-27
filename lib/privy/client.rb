@@ -99,7 +99,7 @@ module Privy
       success = (200..299).cover?(status)
 
       raw_data = success ? response.parsed_response : nil
-      data = raw_data ? Util.convert_to_bridged_object(raw_data) : nil
+      data = raw_data ? Util.convert_to_privy_object(raw_data) : nil
       error = success ? nil : build_error(status, response)
 
       Response.new(status, data, error)
