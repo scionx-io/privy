@@ -6,17 +6,6 @@ require 'base64'
 module Privy
   module Util
     class << self
-      # Convert API response data to bridged object for easy access
-      def convert_to_bridged_object(data)
-        if data.is_a?(Hash)
-          BridgedObject.new(data)
-        elsif data.is_a?(Array)
-          data.map { |item| convert_to_bridged_object(item) }
-        else
-          data
-        end
-      end
-
       # Sign a request payload using the private key
       def sign_request(private_key_pem, method, endpoint, payload = {})
         # Construct the message to sign according to Privy's specification
@@ -54,10 +43,21 @@ module Privy
           raise "Failed to verify signature: #{e.message}"
         end
       end
+
+      # Convert API response data to PrivyObject for easy access
+      def convert_to_privy_object(data)
+        if data.is_a?(Hash)
+          PrivyObject.new(data)
+        elsif data.is_a?(Array)
+          data.map { |item| convert_to_privy_object(item) }
+        else
+          data
+        end
+      end
     end
 
-    # A simple class to allow hash-like access to API response objects
-    class BridgedObject
+    # A simple class to allow hash-like and method-based access to API response objects
+    class PrivyObject
       def initialize(attributes = {})
         @attributes = attributes
       end
@@ -100,7 +100,7 @@ module Privy
       end
 
       def inspect
-        "#<BridgedObject:0x#{object_id.to_s(16)} #{@attributes.inspect}>"
+        "#<PrivyObject:0x#{object_id.to_s(16)} #{@attributes.inspect}>"
       end
 
       private
@@ -108,7 +108,7 @@ module Privy
       def convert_value(value)
         case value
         when Hash
-          BridgedObject.new(value)
+          PrivyObject.new(value)
         when Array
           value.map { |v| convert_value(v) }
         else
