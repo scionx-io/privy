@@ -39,20 +39,24 @@ response = client.wallets.list
 
 ## Response Objects
 
-All API responses are wrapped in `PrivyObject` instances that support both hash-like and method-based access:
+All API responses wrap data in `PrivyObject` instances that support both hash-like and method-based access:
 
 ```ruby
+client = Privy::Client.new(app_id: 'your_app', app_secret: 'secret')
 response = client.wallets.retrieve(wallet_id)
 
-# Both work:
-response.data['address']
-response.data.address
+# Both access patterns work:
+response.data['address']   # Hash-like access
+response.data.address      # Method access (more Ruby-like)
 
-# Enumerable support:
+# Full Enumerable support:
 response.data.each { |k, v| puts "#{k}: #{v}" }
+response.data.select { |k, v| v.present? }
 ```
 
-See [docs/PRIVY_OBJECT.md](docs/PRIVY_OBJECT.md) for details.
+PrivyObject provides convenient methods: `keys`, `values`, `key?`, `to_hash`, `to_json`, and full iteration support.
+
+See [docs/PRIVY_OBJECT.md](docs/PRIVY_OBJECT.md) for complete documentation.
 
 ## Running Tests
 
