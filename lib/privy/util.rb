@@ -58,6 +58,7 @@ module Privy
 
     # A simple class to allow hash-like and method-based access to API response objects
     class PrivyObject
+      include Enumerable
       def initialize(attributes = {})
         @attributes = attributes
       end
@@ -124,6 +125,11 @@ module Privy
       # Check if a key exists
       def key?(key)
         @attributes.key?(key) || @attributes.key?(key.to_s) || @attributes.key?(key.to_sym)
+      end
+
+      # Enumerable support - iterate over key-value pairs
+      def each(&block)
+        @attributes.each(&block)
       end
 
       private

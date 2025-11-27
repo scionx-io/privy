@@ -87,5 +87,34 @@ module Privy
       assert_instance_of String, string
       assert_includes string, 'balance'
     end
+
+    def test_enumerable_each
+      obj = Util::PrivyObject.new({ 'a' => 1, 'b' => 2, 'c' => 3 })
+      result = {}
+
+      obj.each { |k, v| result[k] = v }
+
+      assert_equal({ 'a' => 1, 'b' => 2, 'c' => 3 }, result)
+    end
+
+    def test_enumerable_map
+      obj = Util::PrivyObject.new({ 'a' => 1, 'b' => 2 })
+      result = obj.map { |k, v| [k.upcase, v * 2] }
+
+      assert_equal([['A', 2], ['B', 4]], result)
+    end
+
+    def test_enumerable_select
+      obj = Util::PrivyObject.new({ 'a' => 1, 'b' => 2, 'c' => 3 })
+      result = obj.select { |_k, v| v > 1 }
+
+      assert_equal({ 'b' => 2, 'c' => 3 }, result.to_h)
+    end
+
+    def test_enumerable_count
+      obj = Util::PrivyObject.new({ 'a' => 1, 'b' => 2, 'c' => 3 })
+
+      assert_equal 3, obj.count
+    end
   end
 end
