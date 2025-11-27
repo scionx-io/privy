@@ -1,4 +1,4 @@
-## [0.1.0] - 2025-11-26
+## [0.0.2] - 2025-11-26
 
 ### Changed
 - **BREAKING**: Renamed `BridgedObject` to `PrivyObject` to avoid confusion with Bridge API integration

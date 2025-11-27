@@ -180,5 +180,65 @@ module Privy
         obj.nonexistent_method
       end
     end
+
+    def test_enumerable_any
+      obj = Util::PrivyObject.new({ 'a' => 1, 'b' => 2 })
+
+      assert obj.any? { |_k, v| v == 2 }
+      refute obj.any? { |_k, v| v == 99 }
+    end
+
+    def test_enumerable_find
+      obj = Util::PrivyObject.new({ 'a' => 1, 'b' => 2, 'c' => 3 })
+      result = obj.find { |_k, v| v == 2 }
+
+      assert_equal ['b', 2], result
+    end
+
+    def test_nil_values
+      obj = Util::PrivyObject.new({ 'value' => nil })
+
+      assert_nil obj['value']
+      assert_nil obj.value
+    end
+
+    def test_empty_object
+      obj = Util::PrivyObject.new({})
+
+      assert_equal 0, obj.count
+      assert_equal [], obj.keys
+      assert_equal [], obj.values
+    end
+
+    def test_convert_to_privy_object_with_hash
+      result = Util.convert_to_privy_object({ 'name' => 'Alice' })
+
+      assert_instance_of Util::PrivyObject, result
+      assert_equal 'Alice', result['name']
+    end
+
+    def test_convert_to_privy_object_with_array
+      result = Util.convert_to_privy_object([
+        { 'id' => 1 },
+        { 'id' => 2 }
+      ])
+
+      assert_instance_of Array, result
+      assert_equal 2, result.length
+      assert_instance_of Util::PrivyObject, result[0]
+      assert_equal 1, result[0]['id']
+    end
+
+    def test_convert_to_privy_object_with_string
+      result = Util.convert_to_privy_object('plain string')
+
+      assert_equal 'plain string', result
+    end
+
+    def test_convert_to_privy_object_with_nil
+      result = Util.convert_to_privy_object(nil)
+
+      assert_nil result
+    end
   end
 end

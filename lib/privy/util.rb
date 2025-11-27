@@ -131,19 +131,6 @@ module Privy
       def each(&block)
         @attributes.each(&block)
       end
-
-      private
-
-      def convert_value(value)
-        case value
-        when Hash
-          PrivyObject.new(value)
-        when Array
-          value.map { |v| convert_value(v) }
-        else
-          value
-        end
-      end
     end
   end
 end
