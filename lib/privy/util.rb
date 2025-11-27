@@ -103,6 +103,29 @@ module Privy
         "#<PrivyObject:0x#{object_id.to_s(16)} #{@attributes.inspect}>"
       end
 
+      # Return the underlying hash
+      alias to_hash to_h
+
+      # Get all keys from the attributes hash
+      def keys
+        @attributes.keys
+      end
+
+      # Get all values from the attributes hash
+      def values
+        @attributes.values
+      end
+
+      # String representation returns JSON for readability
+      def to_s
+        to_json
+      end
+
+      # Check if a key exists
+      def key?(key)
+        @attributes.key?(key) || @attributes.key?(key.to_s) || @attributes.key?(key.to_sym)
+      end
+
       private
 
       def convert_value(value)
