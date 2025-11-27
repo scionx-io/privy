@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../privy_test'
-require 'minitest/autorun'
+require 'test_helper'
 require 'ostruct'
 
 module Privy
