@@ -37,6 +37,23 @@ response = client.wallets.list
 - Transaction history
 - Object-oriented response handling
 
+## Response Objects
+
+All API responses are wrapped in `PrivyObject` instances that support both hash-like and method-based access:
+
+```ruby
+response = client.wallets.retrieve(wallet_id)
+
+# Both work:
+response.data['address']
+response.data.address
+
+# Enumerable support:
+response.data.each { |k, v| puts "#{k}: #{v}" }
+```
+
+See [docs/PRIVY_OBJECT.md](docs/PRIVY_OBJECT.md) for details.
+
 ## Running Tests
 
 ```bash
